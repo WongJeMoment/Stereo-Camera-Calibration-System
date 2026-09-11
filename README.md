@@ -1,65 +1,83 @@
 # Stereo-Camera-Calibration-System
 
-Blender 三相机仿真与自动标注：平行双目相机、侧面全景相机，以及自动生成的检测与实例分割标注。
+三相机 Blender 仿真、基于 ChArUco 的多相机标定，以及物体自动标注。双目相机基线为 24 厘米，第三台相机从侧面观察整体环境。
 
-![侧面全景标注预览](output/dataset/previews/Side_Overview.png)
+![侧面标注预览](results/annotation/previews/Side_Overview.png)
 
-已生成场景：`output/environment.blend`。用 Blender 打开即可，默认显示侧面全景相机；数字小键盘 0 进入/退出相机视图。在右侧场景属性中切换 Camera 可查看双目左右相机。
+## 目录结构
 
-场景采用米为单位，包含 9 × 7 米网格实验台，以及 6 个目标物体（方块、圆柱、球、圆锥）。这是静态、理想针孔相机的视觉仿真场景，未加入运动、镜头畸变、传感器噪声或刚体动力学。
-
-| 相机 | 位置（米） | 配置 |
-| --- | --- | --- |
-| Stereo_Left | (-0.12, -6, 2.6) | 28 mm，36 mm 传感器宽度 |
-| Stereo_Right | (0.12, -6, 2.6) | 与左相机同姿态、同内参，基线 0.24 m |
-| Side_Overview | (11, -12, 10) | 36 mm，侧前方俯视整个实验台和双目装置 |
-
-双目光轴平行且略向下倾斜，没有向内汇聚；输出分辨率默认为 960 × 640。
-
-## 运行
-
-在本目录终端执行。脚本必须使用 Blender 自带的 Python（包含 bpy 和 NumPy），无需给系统 Python 安装依赖。
-
-```bash
-cd Stereo-Camera-Calibration-System
-# 打开已生成的场景
-blender output/environment.blend
-
-# 渲染三路图像并自动标注
-blender -b output/environment.blend --python-exit-code 1 --python scripts/annotate.py -- --output output/dataset
-
-# 可选：重新创建场景，或修改双目基线（单位米）
-blender -b --python-exit-code 1 --python scripts/create_scene.py -- --output output/environment.blend --baseline 0.24
-
-# 可选：更高分辨率和采样数
-blender -b output/environment.blend --python-exit-code 1 --python scripts/annotate.py -- --output output/dataset_hd --width 1920 --height 1280 --samples 64
-
-# 核验默认场景和数据集
-blender -b output/environment.blend --python-exit-code 1 --python scripts/verify_dataset.py
+```text
+Camera/
+├── calibration/              # 相机标定：普通 Python / OpenCV
+│   ├── calibrate.py          # 标定板生成、内外参求解和误差报告
+│   └── requirements.txt      # 标定依赖
+├── blender/                  # Blender 启动与场景操作
+│   ├── launch.py             # 统一入口：open / create / capture
+│   ├── create_scene.py       # 创建三相机场景（Blender Python）
+│   └── render_calibration.py # 渲染同步标定图像（Blender Python）
+├── annotation/               # 物体检测框、实例掩码等标注工具
+│   └── annotate.py
+├── assets/                   # 场景与标定板资源
+│   ├── scenes/environment.blend
+│   └── boards/               # real：4 cm 格子；simulation：60 cm 格子
+├── data/calibration/         # 标定输入：images/ 和独立 ground_truth.json
+├── results/                  # 输出，与输入数据分开
+│   ├── calibration/          # 标定参数、验证图、report.html
+│   └── annotation/           # RGB、COCO/YOLO、掩码和预览
+├── tests/                    # 数值测试、标定真值核验、标注核验
+└── docs/                     # 分功能使用说明
 ```
 
-重复运行会覆盖同一输出路径中的同名结果。标注脚本在后台临时调整渲染与合成节点，不会保存这些调整到原始 blend 文件。
+`.venv/` 是本地 Python 依赖环境，不提交 Git。`data/calibration/` 中的原始采集数据和批量角点检测预览也不提交，可通过采集命令重建。场景、标定板、代码和示例结果各自独立存放。
 
-## 输出
+## 快速使用
 
-- `output/dataset/images/`：三台相机的 RGB PNG。
-- `output/dataset/masks/`：16 位单通道 PNG，每个像素存储实例 ID，0 是背景，1–6 是目标。同一物体跨相机保持相同 ID。直接作为普通图片打开时可能近乎全黑，这是低数值 ID 的正常显示效果。
-- `output/dataset/annotations_coco.json`：类别、可见边界框、可见面积和 COCO 未压缩 RLE 实例分割。
-- `output/dataset/labels/`：YOLO 检测标注，每行为 `class_id center_x center_y width height`，坐标按图像尺寸归一化。
-- `output/dataset/classes.txt`：YOLO 类别顺序，类别 ID 从 0 起；COCO 类别 ID 从 1 起。
-- `output/dataset/previews/`：叠加黄色检测框的预览图。
-- `output/dataset/calibration.json`：相机 K、无畸变系数、OpenCV 坐标系的双向外参、双目相对变换、物体位姿与尺寸。
-- `output/dataset/index_exr/`：原始浮点 Object Index 通道，用于检查标注。
+以下命令在项目根目录执行。`launch.py` 只需要系统 Python；OpenCV 标定使用 `.venv/bin/python`；标注和场景脚本由 Blender 执行。
 
-标注来自 Cycles Object Index 通道，考虑遮挡，仅覆盖实际可见像素。完全遮挡或离开画面的物体不输出检测框；边界框采用左上角原点的 `[x, y, width, height]`。硬实例掩码边缘不做抗锯齿。当前场景有 6 个目标，每路都能看到，共 18 条标注。
+```bash
+# 1. 打开现有 Blender 场景
+python3 blender/launch.py open
 
-OpenCV 相机坐标为 X 向右、Y 向下、Z 向前；`world_to_camera_opencv` 满足 `P_camera = T @ P_world`。双目深度 `Z = fx * baseline / (u_left - u_right)` 表示沿光轴深度，不是到相机的欧氏距离。三路按同一帧渲染，当前脚本导出第 1 帧。
+# 2. 安装标定依赖（已有 .venv 时可跳过）
+python3 -m venv .venv
+.venv/bin/python -m pip install -r calibration/requirements.txt
 
-## 修改物体
+# 3. 从现有标定图像估计相机参数
+.venv/bin/python calibration/calibrate.py calibrate \
+  --images data/calibration/images \
+  --board assets/boards/simulation/board.json \
+  --reference Stereo_Left \
+  --zero-distortion
+```
 
-可在 Blender 内移动目标并保存，再重新运行标注脚本。新增网格物体需在 Object Properties → Custom Properties 添加：
+标定完成后，用浏览器打开 [results/calibration/report.html](results/calibration/report.html)。完整参数见 [calibration.json](results/calibration/calibration.json)。真实相机通常应去掉 `--zero-distortion`，并使用实测尺寸的真实标定板配置。
 
-- `instance_id`：唯一整数，范围 1–32767。
-- `category`：类别字符串，例如 `cube`。
+## 重建数据与检查
 
-平台、网格、相机外壳和支架默认作为背景。类别列表按名称排序；新增类别后请以新生成的 `classes.txt` 为准。保持相机名称不变，并使用透视、水平传感器适配、方形像素和零镜头偏移，以匹配内参导出。默认验证脚本针对本项目的 6 个目标和 24 厘米基线；修改场景后需相应调整验证预期。
+```bash
+# 重新创建场景（会覆盖同名场景）
+python3 blender/launch.py create --baseline 0.24
+
+# 重新渲染 30 组同步标定图像（会覆盖同名图像）
+python3 blender/launch.py capture --frames 30
+
+# 渲染目标物体图像并自动标注
+blender -b assets/scenes/environment.blend --python-exit-code 1 \
+  --python annotation/annotate.py
+
+# 数值测试与标定真值检查
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py'
+.venv/bin/python tests/verify_calibration.py
+
+# 标注数据检查
+blender -b assets/scenes/environment.blend --python-exit-code 1 \
+  --python tests/verify_dataset.py
+```
+
+Blender 不在 PATH 中时：`python3 blender/launch.py --blender /path/to/blender open`。可以在子命令前加 `--dry-run` 只查看将执行的命令。启动器可从其他工作目录调用；显式传入的相对路径以调用者当前目录为准，默认路径定位到本项目。
+
+## 详细说明
+
+- [相机标定、真实采集要求和误差评估](docs/CALIBRATION.md)
+- [Blender 场景与物体标注](docs/ANNOTATION.md)
+- [目录职责与旧路径对应关系](docs/STRUCTURE.md)

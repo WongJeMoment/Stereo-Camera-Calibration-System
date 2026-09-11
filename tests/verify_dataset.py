@@ -1,14 +1,19 @@
-"""blender -b output/environment.blend --python-exit-code 1 --python scripts/verify_dataset.py"""
+"""blender -b assets/scenes/environment.blend --python-exit-code 1 --python tests/verify_dataset.py"""
+import argparse
 import json
 from pathlib import Path
 import struct
 import zlib
+import sys
 import bpy
 import numpy as np
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
-root = Path(__file__).resolve().parents[1] / 'output/dataset'
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset', type=Path, default=Path(__file__).resolve().parents[1] / 'results/annotation')
+args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
+root = args.dataset.resolve()
 coco = json.loads((root / 'annotations_coco.json').read_text())
 cal = json.loads((root / 'calibration.json').read_text())
 assert len([o for o in bpy.context.scene.objects if o.type == 'CAMERA']) == 3

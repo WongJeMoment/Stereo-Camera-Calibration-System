@@ -1,0 +1,22 @@
+{
+  "Side_Overview": {
+    "max_focal_relative_error": 0.001556754423204576,
+    "rotation_error_deg": 0.216401611353236,
+    "camera_center_error_m": 0.02949688066535412
+  },
+  "Stereo_Left": {
+    "max_focal_relative_error": 0.0004537781058400192,
+    "rotation_error_deg": 0.0,
+    "camera_center_error_m": 2.220446049250313e-16
+  },
+  "Stereo_Right": {
+    "max_focal_relative_error": 0.0003723469376104571,
+    "rotation_error_deg": 0.01792335789161325,
+    "camera_center_error_m": 0.0037568553997659416
+  },
+  "stereo_baseline": {
+    "estimated_m": 0.23974461661299978,
+    "true_m": 0.23999997973442078,
+    "absolute_error_m": 0.0002553631214209928
+  }
+}

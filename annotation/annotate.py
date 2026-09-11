@@ -1,11 +1,10 @@
 """Render RGB, visible instance masks, COCO/YOLO labels and camera calibration.
 
-blender -b output/environment.blend --python scripts/annotate.py -- --output output/dataset
+blender -b assets/scenes/environment.blend --python annotation/annotate.py -- --output results/annotation
 Only objects with positive instance_id and a category custom property are labeled.
 """
 import argparse
 import json
-import os
 from pathlib import Path
 import struct
 import sys
@@ -177,7 +176,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', default='output/dataset')
+    parser.add_argument('--output', default=str(Path(__file__).resolve().parents[1] / 'results/annotation'))
     parser.add_argument('--width', type=int, default=960)
     parser.add_argument('--height', type=int, default=640)
     parser.add_argument('--samples', type=int, default=24)

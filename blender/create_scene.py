@@ -1,8 +1,8 @@
-"""Run with: blender -b --python scripts/create_scene.py -- --output output/environment.blend"""
+"""Run with: blender -b --python blender/create_scene.py -- --output assets/scenes/environment.blend"""
 import argparse
-import math
 import os
 import sys
+from pathlib import Path
 import bpy
 from mathutils import Vector
 
@@ -11,7 +11,7 @@ def material(name, color, metallic=0.0):
     mat = bpy.data.materials.new(name)
     mat.diffuse_color = (*color, 1)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get('Principled BSDF')
+    bsdf = next(node for node in mat.node_tree.nodes if node.type == 'BSDF_PRINCIPLED')
     bsdf.inputs['Base Color'].default_value = (*color, 1)
     bsdf.inputs['Roughness'].default_value = 0.38
     bsdf.inputs['Metallic'].default_value = metallic
@@ -59,9 +59,12 @@ def build(path, baseline):
     scene.cycles.use_denoising = True
     scene.render.resolution_x, scene.render.resolution_y = 960, 640
     scene.render.resolution_percentage = 100
+    if scene.world is None:
+        scene.world = bpy.data.worlds.new('Simulation World')
     scene.world.use_nodes = True
-    scene.world.node_tree.nodes['Background'].inputs[0].default_value = (0.16, 0.20, 0.28, 1)
-    scene.world.node_tree.nodes['Background'].inputs[1].default_value = 0.45
+    background = next(node for node in scene.world.node_tree.nodes if node.type == 'BACKGROUND')
+    background.inputs[0].default_value = (0.16, 0.20, 0.28, 1)
+    background.inputs[1].default_value = 0.45
     scene.view_settings.view_transform = 'AgX'
     floor = material('Slate platform', (0.075, 0.105, 0.15))
     grid = material('Grid lines', (0.23, 0.32, 0.4))
@@ -130,7 +133,7 @@ def build(path, baseline):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', default='output/environment.blend')
+    parser.add_argument('--output', default=str(Path(__file__).resolve().parents[1] / 'assets/scenes/environment.blend'))
     parser.add_argument('--baseline', type=float, default=0.24)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
     if args.baseline <= 0:

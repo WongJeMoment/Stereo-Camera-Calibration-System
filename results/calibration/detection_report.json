@@ -1,0 +1,542 @@
+[
+  {
+    "camera": "Side_Overview",
+    "frame": "0000",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0001",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0002",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0003",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0004",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0005",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0006",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0007",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0008",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0009",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0010",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0011",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0012",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0013",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0014",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0015",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0016",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0017",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0018",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0019",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0020",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0021",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0022",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0023",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0024",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0025",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0026",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0027",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0028",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Side_Overview",
+    "frame": "0029",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0000",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0001",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0002",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0003",
+    "corners": 13,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0004",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0005",
+    "corners": 20,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0006",
+    "corners": 15,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0007",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0008",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0009",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0010",
+    "corners": 18,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0011",
+    "corners": 22,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0012",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0013",
+    "corners": 22,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0014",
+    "corners": 12,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0015",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0016",
+    "corners": 11,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0017",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0018",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0019",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0020",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0021",
+    "corners": 15,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0022",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0023",
+    "corners": 19,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0024",
+    "corners": 18,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0025",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0026",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0027",
+    "corners": 19,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0028",
+    "corners": 13,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Left",
+    "frame": "0029",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0000",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0001",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0002",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0003",
+    "corners": 13,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0004",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0005",
+    "corners": 20,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0006",
+    "corners": 15,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0007",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0008",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0009",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0010",
+    "corners": 18,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0011",
+    "corners": 22,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0012",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0013",
+    "corners": 22,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0014",
+    "corners": 12,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0015",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0016",
+    "corners": 11,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0017",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0018",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0019",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0020",
+    "corners": 17,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0021",
+    "corners": 15,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0022",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0023",
+    "corners": 19,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0024",
+    "corners": 18,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0025",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0026",
+    "corners": 24,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0027",
+    "corners": 19,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0028",
+    "corners": 13,
+    "accepted": true
+  },
+  {
+    "camera": "Stereo_Right",
+    "frame": "0029",
+    "corners": 24,
+    "accepted": true
+  }
+]
