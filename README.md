@@ -6,11 +6,11 @@
 
 ## YCB 高速运动场景
 
-场景包含饼干盒、糖盒、番茄汤罐、芥末瓶、金枪鱼罐和香蕉，**只有芥末瓶运动，其余五个物体静止**。三路视频为 960 × 640、60 FPS、180 帧（3 秒），均保存为本地 MP4，位于 `results/motion/`。芥末瓶峰值平移速度约 2.08 m/s，峰值角速度约 721°/s。
+场景**仅保留芥末瓶一个食品目标**，从台面后方向双目相机抛来：前进 2.3 米，沿重力抛物线上升、下落，同时自然翻滚。三路原始视频为 **3840 × 2160（4K）、60 FPS、60 帧（1 秒）**，均保存为本地 MP4，位于 `results/motion/`。并排预览缩小到 1920 × 360，查看完整 4K 请打开各相机的单独 MP4。
 
 ```bash
 python3 blender/launch.py open                 # 打开新的动态场景，空格播放动画
-python3 blender/launch.py record --samples 16  # 重新录制三路视频和每帧 6D 位姿
+python3 blender/launch.py record               # 默认录制三路 4K 视频和每帧 6D 位姿
 ```
 
 用浏览器打开 [视频播放页面](results/motion/index.html)，可同步观看三路并排视频，或切换为 0.25 倍慢放。操作、速度设置及坐标定义见 [动态场景说明](docs/MOTION.md)。原静态场景仍在 `assets/scenes/environment.blend`，原标定和标注示例继续使用它。

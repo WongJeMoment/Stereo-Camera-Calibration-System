@@ -34,16 +34,17 @@ def main():
     motion = sub.add_parser('create-motion', help='Build the high-dynamic YCB scene (download models first)')
     motion.add_argument('--output', type=Path, default=MOTION_SCENE)
     motion.add_argument('--models', type=Path, default=ROOT / 'assets/models/ycb')
-    motion.add_argument('--frames', type=int, default=180)
+    motion.add_argument('--frames', type=int, default=60)
     motion.add_argument('--fps', type=int, default=60)
     motion.add_argument('--speed', type=float, default=1.0)
     motion.add_argument('--moving-object', default='006_mustard_bottle', help='YCB model name of the only moving object')
     record = sub.add_parser('record', help='Record synchronized videos and per-frame 6D object poses')
     record.add_argument('--scene', type=Path, default=MOTION_SCENE)
     record.add_argument('--output', type=Path, default=ROOT / 'results/motion')
-    record.add_argument('--width', type=int, default=960)
-    record.add_argument('--height', type=int, default=640)
-    record.add_argument('--samples', type=int, default=8)
+    record.add_argument('--width', type=int, default=3840)
+    record.add_argument('--height', type=int, default=2160)
+    record.add_argument('--samples', type=int, default=16)
+    record.add_argument('--engine', choices=['EEVEE', 'CYCLES'], default='EEVEE')
     record.add_argument('--device', choices=['AUTO', 'CPU', 'OPTIX', 'CUDA'], default='AUTO')
     record.add_argument('--shutter', type=float, default=0.25)
     args = parser.parse_args()
@@ -83,7 +84,7 @@ def main():
         cmd = [executable, '-b', str(args.scene.resolve()), '--python-exit-code', '1', '--python',
                str(ROOT / 'blender/record_motion.py'), '--', '--output', str(args.output.resolve()),
                '--width', str(args.width), '--height', str(args.height), '--samples', str(args.samples),
-               '--shutter', str(args.shutter), '--device', args.device]
+               '--shutter', str(args.shutter), '--device', args.device, '--engine', args.engine]
     print(shlex.join(cmd), flush=True)
     if not args.dry_run:
         return subprocess.run(cmd, cwd=ROOT).returncode

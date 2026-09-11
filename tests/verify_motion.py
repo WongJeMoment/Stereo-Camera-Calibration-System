@@ -22,7 +22,9 @@ def main(root):
         numerator, denominator = map(int, info['avg_frame_rate'].split('/'))
         assert numerator/denominator == fps and int(info['nb_read_frames']) == count
         assert [info['width'], info['height']] == [meta['cameras'][name]['width'], meta['cameras'][name]['height']]
+        assert [info['width'], info['height']] == [3840, 2160], 'Individual camera video must be native 4K'
     bounds = {o['instance_id']: np.array(o['bounds_local_m']) for o in meta['objects']}
+    assert len(bounds) == 1, 'Only the thrown object should remain in the scene'
     motion, tracks, rotations = {}, {}, {}
     moving_models = meta['moving_models']
     assert len(moving_models) == 1, 'Exactly one moving object is required'
@@ -62,11 +64,21 @@ def main(root):
         angular_speed = [float(np.linalg.norm(cv2.Rodrigues(b @ a.T)[0])*fps*180/np.pi) for a, b in zip(Rs, Rs[1:])]
         if name in moving_models:
             assert speed.max() > 1.0, (name, 'Default high-dynamic trajectory too slow')
-            assert max(angular_speed) > 400, (name, 'Default rotational motion too slow')
+            assert max(angular_speed) > 100, (name, 'Missing free-flight tumble')
         else:
             assert speed.max() < 1e-6, (name, 'Stationary object translated')
             assert max(angular_speed) < 0.01, (name, 'Stationary object rotated')
         motion[name] = {'is_moving': name in moving_models, 'max_center_speed_m_s': float(speed.max()), 'max_angular_speed_deg_s': max(angular_speed)}
+        trajectory = meta['trajectory']
+        times = np.array([row['timestamp_s'] for row in frames[names[0]]])
+        expected = np.array(trajectory['start_m']) + times[:, None]*np.array(trajectory['launch_velocity_m_s'])
+        expected[:, 2] -= 0.5*trajectory['gravity_m_s2']*times**2
+        assert np.allclose(positions, expected, atol=1e-5), 'Trajectory is not the specified ballistic arc'
+        centers = np.array(positions)
+        assert centers[0, 1]-centers[-1, 1] > 2, 'Object must approach the cameras by over two meters'
+        assert centers[:, 2].max()-max(centers[0, 2], centers[-1, 2]) > 0.8, 'Missing visible rise and fall'
+        motion[name]['forward_travel_m'] = float(centers[0, 1]-centers[-1, 1])
+        motion[name]['arc_rise_m'] = float(centers[:, 2].max()-centers[0, 2])
     left = np.array(meta['cameras']['Stereo_Left']['world_to_camera_opencv'])
     right = np.array(meta['cameras']['Stereo_Right']['world_to_camera_opencv'])
     relative = right @ np.linalg.inv(left)
