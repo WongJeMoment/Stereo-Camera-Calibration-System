@@ -1,0 +1,4 @@
+cone
+cube
+cylinder
+sphere
