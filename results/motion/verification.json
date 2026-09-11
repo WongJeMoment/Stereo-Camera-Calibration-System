@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "frames_per_camera": 180,
+  "fps": 60.0,
+  "moving_models": [
+    "006_mustard_bottle"
+  ],
+  "objects": {
+    "003_cracker_box": {
+      "is_moving": false,
+      "max_center_speed_m_s": 0.0,
+      "max_angular_speed_deg_s": 0.0
+    },
+    "004_sugar_box": {
+      "is_moving": false,
+      "max_center_speed_m_s": 0.0,
+      "max_angular_speed_deg_s": 0.0
+    },
+    "005_tomato_soup_can": {
+      "is_moving": false,
+      "max_center_speed_m_s": 0.0,
+      "max_angular_speed_deg_s": 0.0
+    },
+    "006_mustard_bottle": {
+      "is_moving": true,
+      "max_center_speed_m_s": 2.079534987734025,
+      "max_angular_speed_deg_s": 721.3858813898385
+    },
+    "007_tuna_fish_can": {
+      "is_moving": false,
+      "max_center_speed_m_s": 0.0,
+      "max_angular_speed_deg_s": 0.0
+    },
+    "011_banana": {
+      "is_moving": false,
+      "max_center_speed_m_s": 0.0,
+      "max_angular_speed_deg_s": 0.0
+    }
+  },
+  "checks": [
+    "MP4 frame counts and rate",
+    "shared timestamps and world poses",
+    "OpenCV pose transforms",
+    "metric rigid transforms",
+    "all object 3D bounds inside all cameras",
+    "0.24 m parallel stereo"
+  ]
+}

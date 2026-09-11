@@ -1,8 +1,19 @@
 # Stereo-Camera-Calibration-System
 
-三相机 Blender 仿真、基于 ChArUco 的多相机标定，以及物体自动标注。双目相机基线为 24 厘米，第三台相机从侧面观察整体环境。
+三相机 Blender 仿真、基于 ChArUco 的多相机标定，以及物体自动标注。当前默认打开 YCB 食品物体高速运动场景，双目相机基线为 24 厘米，第三台相机从侧面观察整体环境。
 
-![侧面标注预览](results/annotation/previews/Side_Overview.png)
+![三相机运动视频预览](results/motion/preview.jpg)
+
+## YCB 高速运动场景
+
+场景包含饼干盒、糖盒、番茄汤罐、芥末瓶、金枪鱼罐和香蕉，**只有芥末瓶运动，其余五个物体静止**。三路视频为 960 × 640、60 FPS、180 帧（3 秒），均保存为本地 MP4，位于 `results/motion/`。芥末瓶峰值平移速度约 2.08 m/s，峰值角速度约 721°/s。
+
+```bash
+python3 blender/launch.py open                 # 打开新的动态场景，空格播放动画
+python3 blender/launch.py record --samples 16  # 重新录制三路视频和每帧 6D 位姿
+```
+
+用浏览器打开 [视频播放页面](results/motion/index.html)，可同步观看三路并排视频，或切换为 0.25 倍慢放。操作、速度设置及坐标定义见 [动态场景说明](docs/MOTION.md)。原静态场景仍在 `assets/scenes/environment.blend`，原标定和标注示例继续使用它。
 
 ## 目录结构
 
@@ -12,18 +23,23 @@ Camera/
 │   ├── calibrate.py          # 标定板生成、内外参求解和误差报告
 │   └── requirements.txt      # 标定依赖
 ├── blender/                  # Blender 启动与场景操作
-│   ├── launch.py             # 统一入口：open / create / capture
+│   ├── launch.py             # open / create / capture / create-motion / record
 │   ├── create_scene.py       # 创建三相机场景（Blender Python）
-│   └── render_calibration.py # 渲染同步标定图像（Blender Python）
+│   ├── render_calibration.py # 渲染同步标定图像（Blender Python）
+│   ├── download_ycb.py       # 下载带纹理的 YCB 扫描模型
+│   ├── create_motion_scene.py # 创建高速运动场景
+│   └── record_motion.py     # 三路同步录制和逐帧位姿导出
 ├── annotation/               # 物体检测框、实例掩码等标注工具
 │   └── annotate.py
 ├── assets/                   # 场景与标定板资源
-│   ├── scenes/environment.blend
+│   ├── scenes/              # environment.blend 静态；ycb_motion.blend 动态
+│   ├── models/ycb/          # 原始 YCB 模型，可通过下载脚本重建
 │   └── boards/               # real：4 cm 格子；simulation：60 cm 格子
 ├── data/calibration/         # 标定输入：images/ 和独立 ground_truth.json
 ├── results/                  # 输出，与输入数据分开
 │   ├── calibration/          # 标定参数、验证图、report.html
-│   └── annotation/           # RGB、COCO/YOLO、掩码和预览
+│   ├── annotation/          # RGB、COCO/YOLO、掩码和预览
+│   └── motion/              # 三路 MP4、并排视频、逐帧 6D 位姿和相机真值
 ├── tests/                    # 数值测试、标定真值核验、标注核验
 └── docs/                     # 分功能使用说明
 ```
@@ -55,7 +71,7 @@ python3 -m venv .venv
 ## 重建数据与检查
 
 ```bash
-# 重新创建场景（会覆盖同名场景）
+# 重新创建原静态场景（会覆盖同名场景）
 python3 blender/launch.py create --baseline 0.24
 
 # 重新渲染 30 组同步标定图像（会覆盖同名图像）
@@ -81,3 +97,4 @@ Blender 不在 PATH 中时：`python3 blender/launch.py --blender /path/to/blend
 - [相机标定、真实采集要求和误差评估](docs/CALIBRATION.md)
 - [Blender 场景与物体标注](docs/ANNOTATION.md)
 - [目录职责与旧路径对应关系](docs/STRUCTURE.md)
+- [YCB 高速运动与同步录制](docs/MOTION.md)

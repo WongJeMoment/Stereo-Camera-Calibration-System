@@ -9,3 +9,5 @@ __pycache__/
 .env.*
 data/calibration/
 results/calibration/detections/
+assets/models/ycb/
+results/motion/frames/

@@ -1,5 +1,7 @@
 # 场景与物体标注
 
+本页描述保留的原静态场景。当前默认打开的 YCB 动态场景与视频，请参阅 [动态场景说明](MOTION.md)。
+
 Blender 三相机仿真与自动标注：平行双目相机、侧面全景相机，以及自动生成的检测与实例分割标注。
 
 ![侧面全景标注预览](../results/annotation/previews/Side_Overview.png)

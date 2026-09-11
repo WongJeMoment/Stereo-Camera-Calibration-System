@@ -1,0 +1,9 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>YCB 三相机高速运动</title>
+<style>body{font-family:system-ui;max-width:1400px;margin:32px auto;padding:0 20px;background:#101a29;color:#eee}video{width:100%;background:#000}a{color:#83caff}</style>
+<h1>YCB 三相机单物体运动</h1><p>仅一个物体移动和旋转，其余物体保持静止。三路使用相同帧号和时间戳。下面从左到右为左目、右目、侧面全景。</p>
+<video controls loop poster="preview.jpg" src="multiview.mp4"></video>
+<p><button onclick="document.querySelector('video').playbackRate=1">正常速度</button>
+<button onclick="document.querySelector('video').playbackRate=0.25">0.25 倍慢放</button></p>
+<p><a href="Stereo_Left.mp4">左目视频</a> · <a href="Stereo_Right.mp4">右目视频</a> · <a href="Side_Overview.mp4">侧面视频</a> · <a href="calibration.json">相机参数与模型说明</a></p>
+<p>视频已保存为本地 MP4：<a href="multiview.mp4" download>保存并排视频</a> · <a href="Stereo_Left.mp4" download>保存左目视频</a> · <a href="Stereo_Right.mp4" download>保存右目视频</a> · <a href="Side_Overview.mp4" download>保存侧面视频</a>。也可直接从本目录复制这些文件。</p>
+<p>poses/ 中每台相机一个 JSONL 文件，包含每帧每个物体的旋转、平移与 4×4 变换。此处为运动场景真值，不是从图像估计的标定结果。</p></html>
