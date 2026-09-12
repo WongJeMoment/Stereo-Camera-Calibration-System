@@ -8,6 +8,8 @@
 
 场景**仅保留芥末瓶一个食品目标**，从台面后方向双目相机抛来：前进 2.3 米，沿重力抛物线上升、下落，同时自然翻滚。三路原始视频为 **3840 × 2160（4K）、60 FPS、60 帧（1 秒）**，均保存为本地 MP4，位于 `results/motion/`。并排预览缩小到 1920 × 360，查看完整 4K 请打开各相机的单独 MP4。
 
+第三台相机从垂直于抛掷平面的正侧面观察，自动框住完整弧线和实验台，并留出至少 10% 边缘余量。可单独更新该视角：`python3 blender/launch.py record --cameras Side_Overview`。
+
 ```bash
 python3 blender/launch.py open                 # 打开新的动态场景，空格播放动画
 python3 blender/launch.py record               # 默认录制三路 4K 视频和每帧 6D 位姿

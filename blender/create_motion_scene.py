@@ -14,6 +14,36 @@ from download_ycb import MODELS
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def frame_side_view(scene, side, target, margin=0.10):
+    """Look perpendicular to the flight plane and fit the complete flight and lab."""
+    v = Vector(scene['launch_velocity_m_s'])
+    normal = Vector((-v.y, v.x, 0)).normalized()
+    side.rotation_euler = (-normal).to_track_quat('-Z', 'Y').to_euler()
+    rotation = side.rotation_euler.to_matrix()
+    right, up = rotation @ Vector((1, 0, 0)), rotation @ Vector((0, 1, 0))
+    points = []
+    original_frame = scene.frame_current
+    scene.frame_set(scene.frame_start)
+    for obj in scene.objects:
+        if obj.type == 'MESH' and obj != target:
+            points.extend(obj.matrix_world @ Vector(corner) for corner in obj.bound_box)
+    for frame in range(scene.frame_start, scene.frame_end+1):
+        scene.frame_set(frame)
+        points.extend(target.matrix_world @ Vector(corner) for corner in target.bound_box)
+    axes = (right, up, normal)
+    midpoint = [(min(p.dot(axis) for p in points)+max(p.dot(axis) for p in points))/2 for axis in axes]
+    focus = sum((axis*value for axis, value in zip(axes, midpoint)), Vector())
+    tan_h = side.data.sensor_width / (2*side.data.lens)
+    tan_v = tan_h * scene.render.resolution_y / scene.render.resolution_x
+    usable = 1-2*margin
+    distance = max((p-focus).dot(normal) + max(abs((p-focus).dot(right))/(tan_h*usable),
+                  abs((p-focus).dot(up))/(tan_v*usable)) for p in points) + 0.05
+    side.location = focus + normal*distance
+    side['view_purpose'] = 'Perpendicular side view of the entire ballistic flight, with environment in frame'
+    side['frame_margin_fraction'] = margin
+    scene.frame_set(original_frame)
+
+
 def pose(t, duration, speed):
     # One throw from the rear of the table toward the stereo cameras, in meters.
     # Horizontal velocity is constant; vertical acceleration is -9.81 m/s^2.
@@ -112,7 +142,7 @@ def build(args):
     left = camera('Stereo_Left', (-0.12, -2.8, 1.2), (-0.12, -0.1, 0.95), 24)
     right = camera('Stereo_Right', (0.12, -2.8, 1.2), (0.12, -0.1, 0.95), 24)
     right.rotation_euler = left.rotation_euler.copy()
-    side = camera('Side_Overview', (4.8, -4.8, 3.8), (-0.25, -0.6, 0.7), 28)
+    side = camera('Side_Overview', (5, 0, 1), (0, 0, 1), 32)
     for cam in (left, right):
         body = cube(cam.name+'_Body', (0, 0, 0), (0.085, 0.065, 0.09), floor, 0.006)
         body.parent = cam
@@ -137,6 +167,8 @@ def build(args):
     scene['gravity_m_s2'] = 9.81
     scene['flight_duration_s'] = duration
     scene['stereo_baseline_m'] = 0.24
+    target = next(obj for obj in scene.objects if obj.get('ycb_model') == args.moving_object)
+    frame_side_view(scene, side, target)
     scene.frame_set(1)
     for screen in bpy.data.screens:
         for area in screen.areas:

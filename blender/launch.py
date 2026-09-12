@@ -47,6 +47,8 @@ def main():
     record.add_argument('--engine', choices=['EEVEE', 'CYCLES'], default='EEVEE')
     record.add_argument('--device', choices=['AUTO', 'CPU', 'OPTIX', 'CUDA'], default='AUTO')
     record.add_argument('--shutter', type=float, default=0.25)
+    record.add_argument('--cameras', nargs='+', choices=['Stereo_Left', 'Stereo_Right', 'Side_Overview'],
+                        default=['Stereo_Left', 'Stereo_Right', 'Side_Overview'])
     args = parser.parse_args()
     executable = shutil.which(args.blender)
     if not executable:
@@ -84,7 +86,8 @@ def main():
         cmd = [executable, '-b', str(args.scene.resolve()), '--python-exit-code', '1', '--python',
                str(ROOT / 'blender/record_motion.py'), '--', '--output', str(args.output.resolve()),
                '--width', str(args.width), '--height', str(args.height), '--samples', str(args.samples),
-               '--shutter', str(args.shutter), '--device', args.device, '--engine', args.engine]
+               '--shutter', str(args.shutter), '--device', args.device, '--engine', args.engine,
+               '--cameras', *args.cameras]
     print(shlex.join(cmd), flush=True)
     if not args.dry_run:
         return subprocess.run(cmd, cwd=ROOT).returncode

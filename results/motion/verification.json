@@ -20,6 +20,7 @@
     "OpenCV pose transforms",
     "metric rigid transforms",
     "all object 3D bounds inside all cameras",
-    "0.24 m parallel stereo"
+    "0.24 m parallel stereo",
+    "perpendicular side view and 10% trajectory margin"
   ]
 }

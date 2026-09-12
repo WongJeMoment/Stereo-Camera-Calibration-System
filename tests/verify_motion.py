@@ -54,6 +54,9 @@ def main(root):
                 pixels = pixels[:, :2] / pixels[:, 2:3]
                 size = np.array([meta['cameras'][name]['width'], meta['cameras'][name]['height']])
                 assert np.all(pixels >= 0) and np.all(pixels < size), (name, frame, obj['model'], 'Object cropped')
+                if name == 'Side_Overview':
+                    uv = pixels/size
+                    assert np.all(uv >= 0.10) and np.all(uv <= 0.90), 'Side camera needs at least 10% trajectory margin'
         for obj in source['objects']:
             name = obj['model']
             tracks.setdefault(name, []).append(obj['geometry_center_world_m'])
@@ -84,9 +87,16 @@ def main(root):
     relative = right @ np.linalg.inv(left)
     assert np.allclose(relative[:3, :3], np.eye(3), atol=1e-6)
     assert np.allclose(relative[:3, 3], [-0.24, 0, 0], atol=1e-6)
+    side_pose = np.array(meta['cameras']['Side_Overview']['camera_to_world_opencv'])
+    direction = np.array(meta['trajectory']['launch_velocity_m_s'])
+    direction[2] = 0
+    direction /= np.linalg.norm(direction)
+    assert abs(side_pose[:3, 2] @ direction) < 1e-6, 'Side camera should look perpendicular to the flight plane'
+    assert abs(side_pose[2, 2]) < 1e-6, 'Side camera should view the arc horizontally'
     result = {'passed': True, 'frames_per_camera': count, 'fps': fps, 'moving_models': moving_models, 'objects': motion,
               'checks': ['MP4 frame counts and rate', 'shared timestamps and world poses', 'OpenCV pose transforms',
-                         'metric rigid transforms', 'all object 3D bounds inside all cameras', '0.24 m parallel stereo']}
+                         'metric rigid transforms', 'all object 3D bounds inside all cameras', '0.24 m parallel stereo',
+                         'perpendicular side view and 10% trajectory margin']}
     (root / 'verification.json').write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2))
 

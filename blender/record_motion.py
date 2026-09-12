@@ -40,11 +40,11 @@ def configure_device(scene, requested):
     return 'CPU'
 
 
-def encode(root, frames, fps, first):
+def encode(root, frames, fps, first, selected=CAMERAS):
     ffmpeg = shutil.which('ffmpeg')
     if not ffmpeg:
         raise RuntimeError('ffmpeg is required to encode MP4; rendered PNG and poses are already saved.')
-    for name in CAMERAS:
+    for name in selected:
         cmd = [ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-framerate', str(fps),
                '-start_number', str(first), '-i', str(root / 'frames' / name / '%06d.png'),
                '-frames:v', str(frames), '-c:v', 'libx264', '-crf', '18', '-preset', 'fast',
@@ -75,6 +75,9 @@ def main(args):
     if args.width % 2 or args.height % 2 or min(args.width, args.height, args.samples) < 1:
         raise ValueError('Video dimensions must be positive even numbers; samples must be positive')
     root = args.output.resolve()
+    selected = tuple(args.cameras)
+    if len(set(selected)) != len(selected):
+        raise ValueError('Each selected camera must be listed only once')
     root.mkdir(parents=True, exist_ok=True)
     (root / 'poses').mkdir(exist_ok=True)
     fps = scene.render.fps / scene.render.fps_base
@@ -127,8 +130,34 @@ def main(args):
             'bounds_local_m': [list(v) for v in obj.bound_box],
             'model_file': f'assets/models/ycb/{obj["ycb_model"]}/google_16k/textured.obj'})
     calibration_path = root / 'calibration.json'
+    if set(selected) != set(CAMERAS):
+        # Reusing other cameras is safe only if their settings and every object pose match.
+        if not calibration_path.is_file():
+            raise ValueError('Partial recording requires an existing complete recording in --output')
+        previous = json.loads(calibration_path.read_text())
+        for key in ('fps', 'first_frame', 'last_frame', 'exposure_s', 'objects', 'trajectory', 'render_engine'):
+            if previous.get(key) != meta.get(key):
+                raise ValueError('Cannot reuse camera videos: recording setting changed: '+key)
+        unchanged = [name for name in CAMERAS if name not in selected]
+        for name in unchanged:
+            if previous['cameras'][name] != meta['cameras'][name] or not (root / (name+'.mp4')).is_file():
+                raise ValueError('Cannot reuse video for changed or missing camera: '+name)
+            records = [json.loads(line) for line in (root / 'poses' / (name+'.jsonl')).read_text().splitlines()]
+            if len(records) != end-start+1:
+                raise ValueError('Incomplete pose records for '+name)
+            for frame, record in zip(range(start, end+1), records):
+                scene.frame_set(frame)
+                if record['frame'] != frame or abs(record['timestamp_s']-(frame-1)/fps) > 1e-9:
+                    raise ValueError('Frame synchronization mismatch: '+name)
+                stored = {item['model']: item['object_to_world'] for item in record['objects']}
+                for obj in targets:
+                    actual = obj.matrix_world
+                    if obj['ycb_model'] not in stored or any(abs(actual[i][j]-stored[obj['ycb_model']][i][j]) > 1e-6 for i in range(4) for j in range(4)):
+                        raise ValueError('Animation changed; record all cameras again')
+        scene.frame_set(start)
+        print('Reusing unchanged camera videos:', ', '.join(unchanged), flush=True)
     calibration_path.write_text(json.dumps(meta, indent=2))
-    streams = {name: (root / 'poses' / (name+'.jsonl')).open('w') for name in CAMERAS}
+    streams = {name: (root / 'poses' / (name+'.jsonl')).open('w') for name in selected}
     started = perf_counter()
     try:
         for frame in range(start, end+1):
@@ -136,7 +165,7 @@ def main(args):
             bpy.context.view_layer.update()
             # Snapshot once per time step, shared by all three camera records.
             poses = [(o, o.matrix_world.copy()) for o in targets]
-            for name in CAMERAS:
+            for name in selected:
                 cam = bpy.data.objects[name]
                 scene.camera = cam
                 extrinsic = Matrix(meta['cameras'][name]['world_to_camera_opencv'])
@@ -162,7 +191,7 @@ def main(args):
     finally:
         for stream in streams.values():
             stream.close()
-    encode(root, end-start+1, fps, start)
+    encode(root, end-start+1, fps, start, selected)
     # Remove stale frames from longer previous recordings after successful encoding.
     for name in CAMERAS:
         for image_path in (root / 'frames' / name).glob('*.png'):
@@ -193,6 +222,7 @@ if __name__ == '__main__':
     parser.add_argument('--shutter', type=float, default=0.25, help='Exposure as fraction of frame interval; 0 disables blur')
     parser.add_argument('--start', type=int)
     parser.add_argument('--end', type=int)
+    parser.add_argument('--cameras', nargs='+', choices=CAMERAS, default=list(CAMERAS))
     args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
     if not 0 <= args.shutter <= 1:
         parser.error('shutter must be between 0 and 1')

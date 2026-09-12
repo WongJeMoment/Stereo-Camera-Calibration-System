@@ -7,6 +7,9 @@
 ```bash
 python3 blender/launch.py open   # 打开场景；空格播放抛掷动画
 python3 blender/launch.py record # 默认原生 3840×2160、60 FPS，三路同步录制
+
+# 只更新第三台相机的视频，并自动刷新三路并排预览
+python3 blender/launch.py record --cameras Side_Overview
 ```
 
 视频保存在本机 `results/motion/`：
@@ -49,7 +52,11 @@ python3 blender/launch.py record --shutter 0 --output results/throw_sharp
 
 渲染器在每个时间步固定场景状态，再顺序渲染三台相机，因此三路共享帧号、时间戳和世界位姿。没有模拟滚动快门、时钟漂移或硬件触发误差。
 
-`results/motion/calibration.json` 保存本次录制的相机真值、分辨率、FPS、曝光时间、模型信息，以及起点、初速度和重力参数。双目基线仍为 0.24 米；双目位置改为 `(±0.12, -2.8, 1.2)`，焦距 24 mm。侧面相机位于 `(4.8, -4.8, 3.8)`，焦距 28 mm，覆盖抛掷弧线和整个实验台。
+`results/motion/calibration.json` 保存本次录制的相机真值、分辨率、FPS、曝光时间、模型信息，以及起点、初速度和重力参数。双目基线仍为 0.24 米；双目位置为 `(±0.12, -2.8, 1.2)`，焦距 24 mm。第三台相机采用水平正侧视，视线垂直于抛掷平面，避免从斜前方观察时弧线被压缩。
+
+侧面相机焦距为 32 mm，位置根据完整动画中物体包围盒及实验台、双目装置范围自动计算，预留至少 10% 画面边缘余量。当前默认位置约为 `(5.217, -2.232, 0.876)` 米，完整覆盖抛出起点、最高点和终点。修改轨迹后重新运行 `create-motion`，侧面相机也会重新取景。
+
+`record --cameras Side_Overview` 会复用已有双目 MP4，仅重渲染侧面画面并更新侧面位姿、相机参数和并排视频。复用前会检查未重录相机的内外参、时间戳及全部帧的物体位姿；如果轨迹或双目参数变化，则拒绝复用，需重新录制全部相机。
 
 **不要复用旧相机参数。** `results/calibration/calibration.json` 对应原静态标定场景，不适用于当前视频。本次 `results/motion/calibration.json` 是 Blender 真值，未对新布局重新执行 ChArUco 图像标定。
 
