@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>三视角预测轨迹对比</title>
+<style>body{background:#101a29;color:#eee;font:17px/1.7 system-ui;max-width:1400px;margin:30px auto;padding:0 20px}video{width:100%}a{color:#83caff}button,select{font:inherit;margin:6px;padding:5px}input{width:80%}</style>
+<h1>三视角 · 预测轨迹与真实轨迹</h1>
+<p>左上：左目；右上：右目；左下：侧面。青色实线/圆为已发生的真实轨迹，橙色虚线/十字为预测，红线连接当前预测与真实位置。</p>
+<p>每个画面左上角显示世界坐标 XYZ（米）、各轴偏差（预测 − 真实）和三维欧氏误差（厘米）。三个相机展示同一个三维预测，因此同一帧的 XYZ 和三维误差相同。</p>
+<p>方法：gravity；输入：synthetic_stereo（尚未从视频检测瓶子）。前 20 帧收集历史观测，预测坐标显示 --；预测从下一帧开始。真实坐标仅用于对比。</p>
+<video id="video" controls loop src="multiview.mp4"></video>
+<p><button id="previous">上一帧</button><button id="next">下一帧</button><select id="rate"><option value="0.25">0.25 倍慢放</option><option value="0.1">0.1 倍慢放</option><option value="1">正常速度</option></select></p>
+<p><input id="frame" aria-label="视频帧" type="range" min="1" max="60" value="1"><span id="label"></span></p>
+<p><a href="Stereo_Left.mp4">左目 4K 视频</a> · <a href="Stereo_Right.mp4">右目 4K 视频</a> · <a href="Side_Overview.mp4">侧面 4K 视频</a> · <a href="multiview.mp4" download>下载三视角合成视频</a></p>
+<p>合成预览为 1920×1080；查看清晰坐标请打开单独 4K 视频。单个视频也可用本地播放器逐帧查看。</p>
+<script>const v=document.getElementById('video'), s=document.getElementById('frame'), label=document.getElementById('label');
+const fps=60.0, total=60;v.playbackRate=.25;
+function seek(n){v.pause();n=Math.max(1,Math.min(total,n));v.currentTime=(n-1+.1)/fps;s.value=n;label.textContent=n+'/'+total;}
+s.oninput=()=>seek(Number(s.value));document.getElementById('previous').onclick=()=>seek(Number(s.value)-1);document.getElementById('next').onclick=()=>seek(Number(s.value)+1);
+document.getElementById('rate').onchange=e=>v.playbackRate=Number(e.target.value);
+v.ontimeupdate=()=>{s.value=Math.min(total,Math.floor(v.currentTime*fps)+1);label.textContent=s.value+'/'+total;};label.textContent='1/'+total;
+</script></html>

@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "observation_mode": "synthetic_stereo",
+  "seed": 42,
+  "noise_px": 1.0,
+  "gravity_prior_m_s2": 9.81,
+  "observed_frames": 20,
+  "predicted_frames": 40,
+  "cutoff_time_s": 0.31666666666666665,
+  "forecast_duration_s": 0.6666666666666666,
+  "target": "006_mustard_bottle geometry_center_world_m",
+  "coordinate_system": "Blender world, meters, Z up",
+  "source_motion": "/home/zhe/Camera/results/motion",
+  "protocol": "Single fixed prefix; no future position or launch-velocity input; ideal ballistic simulation",
+  "observation_ADE_m": 0.021714650820184193,
+  "metrics": {
+    "constant_velocity": {
+      "ADE_m": 1.3625066534111412,
+      "FDE_m": 3.293184183177552,
+      "RMSE_3D_m": 1.665293488940871,
+      "max_error_m": 3.293184183177552,
+      "horizon_errors_m": {
+        "0.10s": {
+          "actual_horizon_s": 0.10000000000000003,
+          "error_m": 0.2820926226164037
+        },
+        "0.25s": {
+          "actual_horizon_s": 0.25,
+          "error_m": 0.7724870709820775
+        },
+        "0.50s": {
+          "actual_horizon_s": 0.5,
+          "error_m": 2.08051203316044
+        }
+      }
+    },
+    "constant_acceleration": {
+      "ADE_m": 0.30133297840444084,
+      "FDE_m": 0.7518923657349055,
+      "RMSE_3D_m": 0.37455592820913214,
+      "max_error_m": 0.7518923657349055,
+      "horizon_errors_m": {
+        "0.10s": {
+          "actual_horizon_s": 0.10000000000000003,
+          "error_m": 0.05127589472020616
+        },
+        "0.25s": {
+          "actual_horizon_s": 0.25,
+          "error_m": 0.1633857568855524
+        },
+        "0.50s": {
+          "actual_horizon_s": 0.5,
+          "error_m": 0.4675914513367812
+        }
+      }
+    },
+    "gravity": {
+      "ADE_m": 0.024658715895755454,
+      "FDE_m": 0.03603064841084302,
+      "RMSE_3D_m": 0.02556092697833025,
+      "max_error_m": 0.03603064841084302,
+      "horizon_errors_m": {
+        "0.10s": {
+          "actual_horizon_s": 0.10000000000000003,
+          "error_m": 0.016203843008844494
+        },
+        "0.25s": {
+          "actual_horizon_s": 0.25,
+          "error_m": 0.02145086898029325
+        },
+        "0.50s": {
+          "actual_horizon_s": 0.5,
+          "error_m": 0.030198280182688775
+        }
+      }
+    }
+  },
+  "estimated_states": {
+    "constant_velocity": {
+      "anchor_time_s": 0.31666666666666665,
+      "position_m": [
+        0.22561992260252148,
+        0.296675953280055,
+        1.762710641804635
+      ],
+      "velocity_m_s": [
+        -0.6138712744219696,
+        -2.373784635843892,
+        3.2704140801762676
+      ],
+      "acceleration_m_s2": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "constant_acceleration": {
+      "anchor_time_s": 0.31666666666666665,
+      "position_m": [
+        0.2273396226609134,
+        0.31517222086678054,
+        1.685492767909029
+      ],
+      "velocity_m_s": [
+        -0.5794772732541333,
+        -2.0038592841093856,
+        1.726056602264138
+      ],
+      "acceleration_m_s2": [
+        0.2172252705337031,
+        2.3363706425337245,
+        -9.753836702602918
+      ]
+    },
+    "gravity": {
+      "anchor_time_s": 0.31666666666666665,
+      "position_m": [
+        0.22561992260252148,
+        0.296675953280055,
+        1.685048141804635
+      ],
+      "velocity_m_s": [
+        -0.6138712744219696,
+        -2.373784635843892,
+        1.7171640801762669
+      ],
+      "acceleration_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ]
+    }
+  }
+}

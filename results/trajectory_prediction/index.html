@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<title>瓶子轨迹预测 V1</title><style>body{max-width:1100px;margin:36px auto;padding:0 20px;font:17px/1.7 sans-serif;background:#f5f7fb;color:#182535}img{width:100%}table{border-collapse:collapse;width:100%;background:white}td,th{padding:12px;border-bottom:1px solid #ddd;text-align:left}a{color:#1654ba}</style>
+<h1>瓶子轨迹预测 · V1</h1><p><a href="views/gravity/index.html">三视角视频：预测轨迹、XYZ 和误差</a>（先运行 trajectory_prediction.render_views 生成）</p>
+<p>观测前 20 帧（0.000–0.317 秒），固定在此时刻预测后 40 帧。
+所有误差仅在未来帧上计算，单位为厘米，数值越低越好。</p>
+<p><strong>输入：synthetic_stereo。</strong>双目仿真模式使用真实中心投影后添加 1.0 像素高斯噪声，再三角化；没有运行视频检测器。
+真值为 Blender 几何中心，当前场景为理想重力抛物线。单条轨迹结果不能证明真实视频或多场景泛化精度。</p>
+<table><tr><th>方法</th><th>平均距离 ADE (cm)</th><th>终点 FDE (cm)</th><th>3D RMSE (cm)</th></tr><tr><td>constant_velocity</td><td>136.251</td><td>329.318</td><td>166.529</td></tr><tr><td>constant_acceleration</td><td>30.133</td><td>75.189</td><td>37.456</td></tr><tr><td>gravity</td><td>2.466</td><td>3.603</td><td>2.556</td></tr></table>
+<img src="comparison.png" alt="三维轨迹、抛物线、未来误差与高度对比">
+<p>黑线为真值；蓝色散点为历史观测；gravity 为已知重力预测，constant_velocity 为匀速对照，constant_acceleration 为自由估计加速度对照。</p>
+<p><a href="comparison.svg">下载矢量图</a> · <a href="predictions.csv">逐帧预测及真值</a> · <a href="observations.csv">历史观测</a> · <a href="metrics.json">完整指标及初始状态</a></p>
+</html>

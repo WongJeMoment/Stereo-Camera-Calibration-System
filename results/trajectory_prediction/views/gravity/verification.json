@@ -1,0 +1,20 @@
+{
+  "Stereo_Left": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 60.0,
+    "frames": 60
+  },
+  "Stereo_Right": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 60.0,
+    "frames": 60
+  },
+  "Side_Overview": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 60.0,
+    "frames": 60
+  }
+}

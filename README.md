@@ -17,6 +17,27 @@ python3 blender/launch.py record               # 默认录制三路 4K 视频和
 
 用浏览器打开 [视频播放页面](results/motion/index.html)，可同步观看三路并排视频，或切换为 0.25 倍慢放。操作、速度设置及坐标定义见 [动态场景说明](docs/MOTION.md)。原静态场景仍在 `assets/scenes/environment.blend`，原标定和标注示例继续使用它。
 
+## 瓶子轨迹预测 V1
+
+独立模块位于 [`trajectory_prediction/`](trajectory_prediction/README.md)，含 2026 年论文启发、后续视觉/残差学习设计和可运行基线。
+默认将前 15 帧的瓶子中心生成带 1 px 噪声的双目观测，预测后 45 帧；比较匀速、自由加速度和已知重力三种方法。
+这是仿真观测实验，尚未从视频检测瓶子。
+
+```bash
+.venv/bin/python -m pip install -r trajectory_prediction/requirements.txt
+.venv/bin/python -m trajectory_prediction.run
+xdg-open results/trajectory_prediction/index.html
+```
+
+打开 [预测与真实轨迹对比](results/trajectory_prediction/index.html)，查看轨迹图、未来误差和逐帧 CSV。
+
+从三台相机的视频中查看投影轨迹及左上角 XYZ/误差：
+
+```bash
+.venv/bin/python -m trajectory_prediction.render_views
+xdg-open results/trajectory_prediction/views/gravity/index.html
+```
+
 ## 目录结构
 
 ```text
@@ -33,6 +54,7 @@ Camera/
 │   └── record_motion.py     # 三路同步录制和逐帧位姿导出
 ├── annotation/               # 物体检测框、实例掩码等标注工具
 │   └── annotate.py
+├── trajectory_prediction/    # 轨迹预测、双目观测仿真、评估和设计文档
 ├── assets/                   # 场景与标定板资源
 │   ├── scenes/              # environment.blend 静态；ycb_motion.blend 动态
 │   ├── models/ycb/          # 原始 YCB 模型，可通过下载脚本重建
@@ -41,7 +63,8 @@ Camera/
 ├── results/                  # 输出，与输入数据分开
 │   ├── calibration/          # 标定参数、验证图、report.html
 │   ├── annotation/          # RGB、COCO/YOLO、掩码和预览
-│   └── motion/              # 三路 MP4、并排视频、逐帧 6D 位姿和相机真值
+│   ├── motion/              # 三路 MP4、并排视频、逐帧 6D 位姿和相机真值
+│   └── trajectory_prediction/ # 预测对比页面、图表、指标和逐帧 CSV
 ├── tests/                    # 数值测试、标定真值核验、标注核验
 └── docs/                     # 分功能使用说明
 ```

@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>YCB 三相机高速运动</title>
 <style>body{font-family:system-ui;max-width:1400px;margin:32px auto;padding:0 20px;background:#101a29;color:#eee}video{width:100%;background:#000}a{color:#83caff}</style>
-<h1>单物体抛掷 · 三相机同步录制</h1><p>场景只保留一个拍摄目标，沿重力抛物线从远处飞向双目相机并翻滚。三路原始 MP4 均为 3840×2160、60 FPS，共 60 帧；文件已保存到本机。下面的并排预览经过缩小，从左到右为左目、右目、侧面全景。</p>
+<h1>单物体抛掷 · 三相机同步录制</h1><p><a href="../trajectory_prediction/views/gravity/index.html">查看三视角预测轨迹、XYZ 坐标及偏差</a>（先运行 trajectory_prediction.render_views）</p><p>场景只保留一个拍摄目标，沿重力抛物线从远处飞向双目相机并翻滚。三路原始 MP4 均为 3840×2160、60 FPS，共 60 帧；文件已保存到本机。下面的并排预览经过缩小，从左到右为左目、右目、侧面全景。</p>
 <video controls loop poster="preview.jpg" src="multiview.mp4"></video>
 <p><button onclick="document.querySelector('video').playbackRate=1">正常速度</button>
 <button onclick="document.querySelector('video').playbackRate=0.25">0.25 倍慢放</button></p>

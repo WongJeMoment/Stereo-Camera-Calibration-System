@@ -7,6 +7,7 @@
 | `calibration/` | 从图像估计相机参数；普通 Python、OpenCV、NumPy、SciPy；不依赖 Blender |
 | `blender/` | 启动 Blender、构建场景、模拟采集；启动器只用标准库，场景脚本使用 bpy |
 | `annotation/` | 从 Blender 场景生成目标物体的检测和分割标注；使用 bpy |
+| `trajectory_prediction/` | 瓶子中心轨迹预测基线、双目观测仿真、评估与论文设计；NumPy、Matplotlib |
 | `assets/boards/` | 标定板图案与对应物理尺寸配置，real 和 simulation 分开 |
 | `assets/scenes/` | 可直接打开的 Blender 场景 |
 | `assets/models/ycb/` | 原始带纹理食品物体模型，下载脚本可重建 |
@@ -14,6 +15,7 @@
 | `results/calibration/` | 图像估计出的参数、角点检测预览、独立验证图与报告 |
 | `results/annotation/` | 物体标注数据集；其中 calibration.json 是 Blender 直接导出的真值 |
 | `results/motion/` | 三路同步运动视频、逐帧图像和 6D 位姿、新场景相机真值 |
+| `results/trajectory_prediction/` | 预测与真值对比页面、PNG/SVG、逐帧 CSV、误差 JSON；oracle 子目录为理想历史观测实验 |
 | `tests/` | 数值回归测试与实际产物核验，不参与正式标定流程 |
 | `docs/` | 使用教程和目录说明 |
 
