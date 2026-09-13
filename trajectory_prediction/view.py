@@ -23,7 +23,7 @@ class Player:
         self.rgb = None
         self.photo = None
         self.timer = None
-        window.title("瓶子轨迹预测 · 三相机查看器")
+        window.title("物体轨迹预测 · 三相机查看器")
         window.geometry("1280x850")
         window.minsize(800, 550)
         window.protocol("WM_DELETE_WINDOW", self.close)

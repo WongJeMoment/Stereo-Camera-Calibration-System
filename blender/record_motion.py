@@ -47,7 +47,7 @@ def encode(root, frames, fps, first, selected=CAMERAS):
     for name in selected:
         cmd = [ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-framerate', str(fps),
                '-start_number', str(first), '-i', str(root / 'frames' / name / '%06d.png'),
-               '-frames:v', str(frames), '-c:v', 'libx264', '-crf', '18', '-preset', 'fast',
+               '-frames:v', str(frames), '-c:v', 'libx264', '-threads', '4', '-crf', '18', '-preset', 'fast',
                '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(root / (name+'.mp4'))]
         subprocess.run(cmd, check=True)
     cmd = [ffmpeg, '-hide_banner', '-loglevel', 'error', '-y']
@@ -57,7 +57,7 @@ def encode(root, frames, fps, first, selected=CAMERAS):
     for i, name in enumerate(CAMERAS):
         filters.append(f'[{i}:v]scale=640:-2,drawtext=text={name}:x=12:y=12:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.6[v{i}]')
     filters.append('[v0][v1][v2]hstack=inputs=3[v]')
-    cmd.extend(['-filter_complex', ';'.join(filters), '-map', '[v]', '-c:v', 'libx264',
+    cmd.extend(['-filter_complex_threads', '1', '-filter_complex', ';'.join(filters), '-map', '[v]', '-c:v', 'libx264', '-threads', '4',
                 '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(root / 'multiview.mp4')])
     subprocess.run(cmd, check=True)
     subprocess.run([ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-i', str(root / 'multiview.mp4'),
@@ -120,6 +120,8 @@ def main(args):
         meta['trajectory'] = {'start_m': list(scene['trajectory_start_m']),
             'launch_velocity_m_s': list(scene['launch_velocity_m_s']),
             'gravity_m_s2': scene['gravity_m_s2'], 'flight_duration_s': scene['flight_duration_s']}
+        if 'spin_deg_s' in scene:
+            meta['trajectory'].update(spin_deg_s=scene['spin_deg_s'], spin_axis=list(scene['spin_axis']))
     for name in CAMERAS:
         (root / 'frames' / name).mkdir(parents=True, exist_ok=True)
         meta['cameras'][name] = calibration(scene, bpy.data.objects[name], args.width, args.height)

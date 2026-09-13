@@ -55,7 +55,7 @@ def write_report(output, times, truth, observed, count, predictions, report):
     ax.scatter(*observed.T, s=12, color="royalblue", label="Observed prefix")
     for method, p in predictions.items():
         ax.plot(*p.T, label=method)
-    ax.set(xlabel="X (m)", ylabel="Y (m)", zlabel="Z (m)", title="Bottle geometry center: 3D trajectory")
+    ax.set(xlabel="X (m)", ylabel="Y (m)", zlabel="Z (m)", title="Object geometry center: 3D trajectory")
     ax.legend(fontsize=7)
     ax = fig.add_subplot(222)
     ax.plot(truth[:, 1], truth[:, 2], color="black", label="Truth")
@@ -80,12 +80,14 @@ def write_report(output, times, truth, observed, count, predictions, report):
     fig.suptitle(f"{report['observation_mode']} | history={count} frames | seed={report['seed']}")
     fig.savefig(output / "comparison.png", dpi=160)
     fig.savefig(output / "comparison.svg")
+    svg = output / "comparison.svg"
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines()) + '\n')
     plt.close(fig)
     rows = "".join(f"<tr><td>{m}</td><td>{v['ADE_m']*100:.3f}</td><td>{v['FDE_m']*100:.3f}</td>"
                    f"<td>{v['RMSE_3D_m']*100:.3f}</td></tr>" for m, v in report["metrics"].items())
     page = f'''<!doctype html><html lang="zh-CN"><meta charset="utf-8">
-<title>瓶子轨迹预测 V1</title><style>body{{max-width:1100px;margin:36px auto;padding:0 20px;font:17px/1.7 sans-serif;background:#f5f7fb;color:#182535}}img{{width:100%}}table{{border-collapse:collapse;width:100%;background:white}}td,th{{padding:12px;border-bottom:1px solid #ddd;text-align:left}}a{{color:#1654ba}}</style>
-<h1>瓶子轨迹预测 · V1</h1><p><a href="views/gravity/index.html">三视角视频：预测轨迹、XYZ 和误差</a>（先运行 trajectory_prediction.render_views 生成）</p>
+<title>物体轨迹预测 V1</title><style>body{{max-width:1100px;margin:36px auto;padding:0 20px;font:17px/1.7 sans-serif;background:#f5f7fb;color:#182535}}img{{width:100%}}table{{border-collapse:collapse;width:100%;background:white}}td,th{{padding:12px;border-bottom:1px solid #ddd;text-align:left}}a{{color:#1654ba}}</style>
+<h1>物体轨迹预测 · V1</h1><p><a href="views/gravity/index.html">三视角视频：预测轨迹、XYZ 和误差</a>（先运行 trajectory_prediction.render_views 生成）</p>
 <p>观测前 {count} 帧（{times[0]:.3f}–{times[count-1]:.3f} 秒），固定在此时刻预测后 {len(times)-count} 帧。
 所有误差仅在未来帧上计算，单位为厘米，数值越低越好。</p>
 <p><strong>输入：{html.escape(report['observation_mode'])}。</strong>双目仿真模式使用真实中心投影后添加 {report['noise_px']} 像素高斯噪声，再三角化；没有运行视频检测器。
@@ -127,7 +129,8 @@ def main():
         "gravity_prior_m_s2": args.gravity,
         "observed_frames": count, "predicted_frames": len(times)-count,
         "cutoff_time_s": float(times[count-1]), "forecast_duration_s": float(times[-1]-times[count-1]),
-        "target": "006_mustard_bottle geometry_center_world_m", "coordinate_system": "Blender world, meters, Z up",
+        "target": next(o['model'] for o in calibration['objects'] if o['is_moving']) + " geometry_center_world_m",
+        "coordinate_system": "Blender world, meters, Z up",
         "source_motion": str(args.motion.resolve()),
         "protocol": "Single fixed prefix; no future position or launch-velocity input; ideal ballistic simulation",
         "observation_ADE_m": float(np.linalg.norm(observed-truth[:count], axis=1).mean()),
@@ -138,12 +141,12 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     (output / "metrics.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
     with (output / "observations.csv").open("w", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["frame", "time_s", "x_m", "y_m", "z_m", "left_u_px", "left_v_px", "right_u_px", "right_v_px"])
         for i in range(count):
             writer.writerow([records[i]["frame"], times[i], *observed[i], *(list(uv[0][i])+list(uv[1][i]) if uv is not None else [""]*4)])
     with (output / "predictions.csv").open("w", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["method", "frame", "time_s", "horizon_s", "pred_x_m", "pred_y_m", "pred_z_m",
                          "true_x_m", "true_y_m", "true_z_m", "vx_m_s", "vy_m_s", "vz_m_s", "error_m"])
         for method, p in predictions.items():

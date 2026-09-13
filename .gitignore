@@ -11,3 +11,15 @@ data/calibration/
 results/calibration/detections/
 assets/models/ycb/
 results/motion/frames/
+
+# Reproducible batch experiment outputs (videos, scenes, poses and reports).
+/results/throw_suite/
+
+# Local editor configuration and Python tooling caches.
+/.vscode/
+/.idea/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/

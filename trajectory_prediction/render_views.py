@@ -66,7 +66,7 @@ def overlay(image, i, times, truth, predicted, count, gt_uv, pred_uv, name, meth
     xyz = lambda value: "  ".join(f"{a.upper()} {v:+.3f}" for a, v in zip("xyz", value))
     texts = [
         (f"{name} | {method} | {i+1}/{len(times)} 帧 | {times[i]:.3f}s", "white"),
-        ("世界坐标 / 米 · 瓶子几何中心", "white"),
+        ("世界坐标 / 米 · 物体几何中心", "white"),
         ("真实: " + xyz(truth[i]), (60, 230, 255)),
         ("预测: " + xyz(pred) if pred is not None else "预测: --  正在收集历史观测", (255, 170, 40)),
         ("偏差: " + xyz(pred-truth[i]) if pred is not None else "偏差: --", "white"),
@@ -177,7 +177,7 @@ s.oninput=()=>seek(Number(s.value));document.getElementById('previous').onclick=
 document.getElementById('rate').onchange=e=>v.playbackRate=Number(e.target.value);
 v.ontimeupdate=()=>{s.value=Math.min(total,Math.floor(v.currentTime*fps)+1);label.textContent=s.value+'/'+total;};label.textContent='1/'+total;
 </script></html>'''
-    info = f"方法：{args.method}；输入：{report['observation_mode']}（尚未从视频检测瓶子）"
+    info = f"方法：{args.method}；输入：{report['observation_mode']}（尚未从视频检测物体）"
     for key, value in {"__INFO__": info, "__COUNT__": count, "__FRAMES__": len(times), "__FPS__": fps, "__LINKS__": links}.items():
         page = page.replace(key, str(value))
     (output / "index.html").write_text(page, encoding="utf-8")

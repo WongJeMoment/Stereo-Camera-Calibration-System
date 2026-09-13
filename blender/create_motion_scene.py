@@ -44,14 +44,34 @@ def frame_side_view(scene, side, target, margin=0.10):
     scene.frame_set(original_frame)
 
 
-def pose(t, duration, speed):
+def pose(t, duration, speed, start=None, velocity=None, spin_deg_s=None, spin_axis=None):
     # One throw from the rear of the table toward the stereo cameras, in meters.
     # Horizontal velocity is constant; vertical acceleration is -9.81 m/s^2.
-    velocity = Vector((-0.6*speed/duration, -2.3*speed/duration, 0.5*9.81*duration))
-    center = Vector((0.42, 1.05, 0.65)) + velocity*t + Vector((0, 0, -0.5*9.81*t*t))
-    axis = Vector((0.85, 0.2, 0.35)).normalized()
-    rotation = Quaternion(axis, math.radians(260)*speed*t) @ Euler((0.1, -0.3, 0.5)).to_quaternion()
+    velocity = Vector(velocity if velocity is not None else (-0.6*speed/duration, -2.3*speed/duration, 0.5*9.81*duration))
+    center = Vector(start if start is not None else (0.42, 1.05, 0.65)) + velocity*t + Vector((0, 0, -0.5*9.81*t*t))
+    axis = Vector(spin_axis if spin_axis is not None else (0.85, 0.2, 0.35)).normalized()
+    rotation = Quaternion(axis, math.radians(spin_deg_s if spin_deg_s is not None else 260*speed)*t) @ Euler((0.1, -0.3, 0.5)).to_quaternion()
     return center, rotation
+
+
+def fit_stereo(scene, cameras, target, margin=0.08):
+    """Keep the baseline and poses; widen both lenses equally if the flight needs it."""
+    max_tan_h = 0.
+    aspect = scene.render.resolution_x / scene.render.resolution_y
+    for frame in range(scene.frame_start, scene.frame_end+1):
+        scene.frame_set(frame)
+        bpy.context.view_layer.update()
+        for cam in cameras:
+            inverse = cam.matrix_world.inverted()
+            for corner in target.bound_box:
+                p = inverse @ target.matrix_world @ Vector(corner)
+                if p.z >= -0.01:
+                    raise ValueError('Throw crosses/approaches the stereo camera plane')
+                max_tan_h = max(max_tan_h, abs(p.x/-p.z), aspect*abs(p.y/-p.z))
+    lens = min(cameras[0].data.lens, cameras[0].data.sensor_width*(1-2*margin)/(2*max_tan_h))
+    for cam in cameras:
+        cam.data.lens = lens
+    scene.frame_set(scene.frame_start)
 
 
 def build(args):
@@ -125,7 +145,8 @@ def build(args):
         obj['model_center_local'] = list(center_local)
         obj['is_moving'] = True
         for frame in range(0, args.frames+2):
-            center, rotation = pose((frame-1)/args.fps, duration, args.speed)
+            center, rotation = pose((frame-1)/args.fps, duration, args.speed,
+                                    args.launch_position, args.launch_velocity, args.spin_deg_s, args.spin_axis)
             obj.rotation_mode = 'QUATERNION'
             obj.rotation_quaternion = rotation
             obj.location = center - rotation.to_matrix() @ center_local
@@ -162,12 +183,16 @@ def build(args):
     scene['motion_speed_multiplier'] = args.speed
     scene['moving_object'] = args.moving_object
     scene['motion_type'] = 'single ballistic throw under gravity with prescribed free-flight tumble; no collision simulation'
-    scene['trajectory_start_m'] = (0.42, 1.05, 0.65)
-    scene['launch_velocity_m_s'] = (-0.6*args.speed/duration, -2.3*args.speed/duration, 0.5*9.81*duration)
+    scene['trajectory_start_m'] = args.launch_position if args.launch_position is not None else (0.42, 1.05, 0.65)
+    scene['launch_velocity_m_s'] = args.launch_velocity if args.launch_velocity is not None else (-0.6*args.speed/duration, -2.3*args.speed/duration, 0.5*9.81*duration)
+    scene['spin_deg_s'] = args.spin_deg_s if args.spin_deg_s is not None else 260*args.speed
+    scene['spin_axis'] = args.spin_axis
     scene['gravity_m_s2'] = 9.81
     scene['flight_duration_s'] = duration
     scene['stereo_baseline_m'] = 0.24
     target = next(obj for obj in scene.objects if obj.get('ycb_model') == args.moving_object)
+    if args.fit_stereo:
+        fit_stereo(scene, (left, right), target)
     frame_side_view(scene, side, target)
     scene.frame_set(1)
     for screen in bpy.data.screens:
@@ -190,7 +215,17 @@ if __name__ == '__main__':
     parser.add_argument('--fps', type=int, default=60)
     parser.add_argument('--speed', type=float, default=1.0, help='Trajectory speed multiplier')
     parser.add_argument('--moving-object', choices=MODELS, default='006_mustard_bottle')
+    parser.add_argument('--launch-position', type=float, nargs=3, metavar=('X', 'Y', 'Z'))
+    parser.add_argument('--launch-velocity', type=float, nargs=3, metavar=('VX', 'VY', 'VZ'))
+    parser.add_argument('--spin-deg-s', type=float)
+    parser.add_argument('--spin-axis', type=float, nargs=3, default=(0.85, 0.2, 0.35))
+    parser.add_argument('--fit-stereo', action='store_true')
     args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
     if args.frames < 2 or args.fps < 1 or args.speed <= 0:
         parser.error('frames >= 2, fps >= 1, speed > 0 required')
+    if (not all(math.isfinite(v) for values in (args.launch_position or [], args.launch_velocity or [], args.spin_axis,
+                                               [args.spin_deg_s] if args.spin_deg_s is not None else []) for v in values)
+            or Vector(args.spin_axis).length < 1e-8
+            or (args.launch_velocity is not None and math.hypot(*args.launch_velocity[:2]) < 1e-8)):
+        parser.error('Finite motion parameters and nonzero spin/horizontal axes required')
     build(args)

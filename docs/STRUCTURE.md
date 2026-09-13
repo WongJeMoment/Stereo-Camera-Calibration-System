@@ -8,6 +8,8 @@
 | `blender/` | 启动 Blender、构建场景、模拟采集；启动器只用标准库，场景脚本使用 bpy |
 | `annotation/` | 从 Blender 场景生成目标物体的检测和分割标注；使用 bpy |
 | `trajectory_prediction/` | 瓶子中心轨迹预测基线、双目观测仿真、评估与论文设计；NumPy、Matplotlib |
+| `experiments/` | 36组抛掷参数、批量调度、视频/位姿核验、Excel和CSV汇总 |
+| `results/throw_suite/` | 六物体各六组独立 Blender 场景、4K原视频、预测视频与结果总表 |
 | `assets/boards/` | 标定板图案与对应物理尺寸配置，real 和 simulation 分开 |
 | `assets/scenes/` | 可直接打开的 Blender 场景 |
 | `assets/models/ycb/` | 原始带纹理食品物体模型，下载脚本可重建 |

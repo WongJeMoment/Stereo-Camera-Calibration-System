@@ -40,6 +40,10 @@ xdg-open results/trajectory_prediction/views/gravity/index.html
 
 ## 目录结构
 
+批量实验：[`experiments/README.md`](experiments/README.md)。运行
+`.venv/bin/python -m experiments.throw_suite` 可生成六物体各六组抛掷、三相机视频和预测对比。
+结果保存到 `results/throw_suite/`，总表为 `summary.xlsx` / `summary.csv`。
+
 ```text
 Camera/
 ├── calibration/              # 相机标定：普通 Python / OpenCV
@@ -55,6 +59,7 @@ Camera/
 ├── annotation/               # 物体检测框、实例掩码等标注工具
 │   └── annotate.py
 ├── trajectory_prediction/    # 轨迹预测、双目观测仿真、评估和设计文档
+├── experiments/              # 六物体×六组批量抛掷、录制、预测和表格汇总
 ├── assets/                   # 场景与标定板资源
 │   ├── scenes/              # environment.blend 静态；ycb_motion.blend 动态
 │   ├── models/ycb/          # 原始 YCB 模型，可通过下载脚本重建

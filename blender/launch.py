@@ -38,6 +38,11 @@ def main():
     motion.add_argument('--fps', type=int, default=60)
     motion.add_argument('--speed', type=float, default=1.0)
     motion.add_argument('--moving-object', default='006_mustard_bottle', help='YCB model name of the only moving object')
+    motion.add_argument('--launch-position', type=float, nargs=3)
+    motion.add_argument('--launch-velocity', type=float, nargs=3)
+    motion.add_argument('--spin-deg-s', type=float)
+    motion.add_argument('--spin-axis', type=float, nargs=3)
+    motion.add_argument('--fit-stereo', action='store_true')
     record = sub.add_parser('record', help='Record synchronized videos and per-frame 6D object poses')
     record.add_argument('--scene', type=Path, default=MOTION_SCENE)
     record.add_argument('--output', type=Path, default=ROOT / 'results/motion')
@@ -78,6 +83,12 @@ def main():
                '--', '--output', str(args.output.resolve()), '--models', str(args.models.resolve()),
                '--frames', str(args.frames), '--fps', str(args.fps), '--speed', str(args.speed),
                '--moving-object', args.moving_object]
+        for flag, value in (('--launch-position', args.launch_position), ('--launch-velocity', args.launch_velocity),
+                            ('--spin-deg-s', args.spin_deg_s), ('--spin-axis', args.spin_axis)):
+            if value is not None:
+                cmd.extend([flag, *map(str, value if isinstance(value, list) else [value])])
+        if args.fit_stereo:
+            cmd.append('--fit-stereo')
     else:
         if not args.scene.is_file():
             parser.error('Motion scene not found. Run create-motion first.')
